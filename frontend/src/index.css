@@ -1,0 +1,18 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0f0f1a;
+  /* 모바일 기기에서 브라우저 스와이프 리프레시(새로고침) 방지 */
+  overscroll-behavior-y: none; 
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}

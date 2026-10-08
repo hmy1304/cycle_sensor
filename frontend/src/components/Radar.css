@@ -1,0 +1,157 @@
+.radar-container {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+  height: 450px; /* 모바일 화면에 적합한 세로 비율 */
+  margin: 0 auto;
+  background-color: #1a1a2e; /* 다크 테마 배경 */
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 255, 204, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 배경 레이더 점선 링 */
+.radar-ring {
+  position: absolute;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.ring-1 { width: 120px; height: 120px; }
+.ring-2 { width: 240px; height: 240px; }
+.ring-3 { width: 360px; height: 360px; }
+
+/* 중앙 자전거(탑뷰) 그래픽 */
+.bike-icon {
+  position: absolute;
+  width: 24px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+.wheel {
+  width: 10px;
+  height: 24px;
+  background-color: #888;
+  border-radius: 5px;
+}
+.frame {
+  width: 6px;
+  height: 40px;
+  background-color: #00ffcc; /* 자전거 프레임 야광색 포인트 */
+  border-radius: 3px;
+  box-shadow: 0 0 10px #00ffcc;
+}
+
+/* 각 방향 센서 영역 공통 스타일 */
+.sensor-zone {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-out;
+  opacity: 0.9;
+  z-index: 5;
+}
+
+.dist-text {
+  color: white;
+  font-weight: 800;
+  font-size: 18px;
+  text-shadow: 0px 2px 4px rgba(0,0,0,1);
+  z-index: 20;
+}
+
+/* 방향별 위치 및 그라데이션 형태 */
+.zone-left {
+  top: 50%;
+  left: 0;
+  width: 150px;
+  height: 250px;
+  transform: translateY(-50%);
+  /* 자전거 쪽(우측)이 중심인 타원 그라데이션 */
+  background: radial-gradient(ellipse at right, transparent 30%, rgba(0,255,0,0.02) 100%);
+  border-top-right-radius: 125px;
+  border-bottom-right-radius: 125px;
+}
+.zone-left .dist-text { margin-right: 50px; }
+
+.zone-right {
+  top: 50%;
+  right: 0;
+  width: 150px;
+  height: 250px;
+  transform: translateY(-50%);
+  /* 자전거 쪽(좌측)이 중심 */
+  background: radial-gradient(ellipse at left, transparent 30%, rgba(0,255,0,0.02) 100%);
+  border-top-left-radius: 125px;
+  border-bottom-left-radius: 125px;
+}
+.zone-right .dist-text { margin-left: 50px; }
+
+.zone-back {
+  bottom: 0;
+  left: 50%;
+  width: 250px;
+  height: 150px;
+  transform: translateX(-50%);
+  /* 자전거 쪽(상단)이 중심 */
+  background: radial-gradient(ellipse at top, transparent 30%, rgba(0,255,0,0.02) 100%);
+  align-items: flex-end;
+  padding-bottom: 20px;
+  border-top-left-radius: 125px;
+  border-top-right-radius: 125px;
+}
+
+/* 상태별 색상 및 애니메이션 (안전/경고/위험) */
+
+/* 1. 안전 (100cm 초과) */
+.safe {
+  opacity: 0.2; /* 거의 안보이게 처리 */
+}
+
+/* 2. 경고 (20cm ~ 100cm) - 주황색 깜빡임 */
+.warning {
+  animation: pulse-warning 1s infinite alternate;
+}
+.zone-left.warning { background: radial-gradient(ellipse at right, transparent 30%, rgba(255, 165, 0, 0.7) 100%); }
+.zone-right.warning { background: radial-gradient(ellipse at left, transparent 30%, rgba(255, 165, 0, 0.7) 100%); }
+.zone-back.warning { background: radial-gradient(ellipse at top, transparent 30%, rgba(255, 165, 0, 0.7) 100%); }
+
+/* 3. 위험 (20cm 이하) - 붉은색 강한 점멸 */
+.danger {
+  animation: pulse-danger 0.2s infinite alternate;
+  z-index: 8; /* 위험 영역을 맨 위로 */
+}
+.zone-left.danger { background: radial-gradient(ellipse at right, transparent 20%, rgba(255, 0, 0, 0.9) 100%); box-shadow: inset 20px 0 20px rgba(255,0,0,0.5); }
+.zone-right.danger { background: radial-gradient(ellipse at left, transparent 20%, rgba(255, 0, 0, 0.9) 100%); box-shadow: inset -20px 0 20px rgba(255,0,0,0.5); }
+.zone-back.danger { background: radial-gradient(ellipse at top, transparent 20%, rgba(255, 0, 0, 0.9) 100%); box-shadow: inset 0 -20px 20px rgba(255,0,0,0.5); }
+
+/* 애니메이션 키프레임 */
+@keyframes pulse-warning {
+  0% { opacity: 0.5; }
+  100% { opacity: 0.9; }
+}
+
+@keyframes pulse-danger {
+  0% { opacity: 0.7; transform: translateY(-50%) scale(1); }
+  100% { opacity: 1; transform: translateY(-50%) scale(1.03); }
+}
+
+/* 후방 영역은 translateX를 유지하며 스케일 조정 */
+.zone-back.danger {
+  animation: pulse-danger-back 0.2s infinite alternate;
+}
+@keyframes pulse-danger-back {
+  0% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1.03); }
+}
